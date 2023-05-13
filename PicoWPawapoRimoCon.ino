@@ -1,4 +1,5 @@
 #include <KeyboardBLE.h>
+#include <PicoBluetoothBLEHID.h>
 #include <pico/cyw43_arch.h>
 
 #define SW_OFF HIGH
@@ -21,10 +22,19 @@ void setup() {
   analogReadResolution(12);
 
   KeyboardBLE.begin();
-  delay(5000);
 }
 
 void loop() {
+
+  //接続状況を見て、未接続だったらLED点滅
+  if (!PicoBluetoothBLEHID.connected()){
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(500);
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(500);
+    return;
+  }
+
   //チャタリング対策。SW_ON_THRESHOLDミリ秒ONが続いたものを採用する。
   int rightCount = 0;
   while (digitalRead(RIGHT_SW_PIN) == SW_ON){
