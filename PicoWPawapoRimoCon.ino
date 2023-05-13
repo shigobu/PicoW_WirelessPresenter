@@ -8,6 +8,7 @@ const int LEFT_SW_PIN = 1;
 const int RIGHT_SW_PIN = 5;
 const int SW_ON_THRESHOLD = 10;
 const int ADC_MAX = 4095;
+const double SYSTEM_VOLTAGE = 3.3;
 int lastBatteryLevel = 100;   //%
 int batteryLevelCount = 0;
 int currentBatteryLevel = 0;
@@ -68,31 +69,15 @@ void loop() {
 }
 
 int GetBatteryLevel(){
-  //cyw43_arch_wait_for_work_until(make_timeout_time_ms(10));
-  //pinMode(A3, INPUT);
-  //pinMode(25, OUTPUT);
-  //digitalWrite(25, HIGH);
   //10回取得して平均を取る
   int count = 10;
   int analogVal = 0;
   for (int i = 0; i < count; i++){
-    int temp = 0;
-    while (true){
-      cyw43_arch_wait_for_work_until(make_timeout_time_ms(10));
-      pinMode(A3, INPUT);
-      pinMode(25, OUTPUT);
-      digitalWrite(25, HIGH);
-      temp = analogRead(A3);
-      if (temp < 700){    //1.8V以下の場合は不正な値と見る。サンプリングしない。
-        continue;
-      }
-      break;
-    }
-    analogVal += temp;
+    analogVal += analogRead(A0);
     delay(1);
   }
   analogVal = analogVal / count;
-  double voltage = mapf(analogVal, 0, ADC_MAX, 0, 3.3) * 3;   //1/3の値がA3に入るので、3倍してもとの値に戻す。
+  double voltage = mapf(analogVal, 0, ADC_MAX, 0, SYSTEM_VOLTAGE) * 2.0;   //1/2の値をA0に入れるので、2倍してもとの値に戻す。
   int batteryLevel = mapf(voltage, 2, 3, 0, 100);
   return constrain(batteryLevel, 0, 100);
 }
