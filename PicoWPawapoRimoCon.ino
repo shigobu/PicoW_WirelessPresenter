@@ -1,6 +1,5 @@
 #include <KeyboardBLE.h>
 #include <PicoBluetoothBLEHID.h>
-#include <pico/cyw43_arch.h>
 
 #define SW_OFF HIGH
 #define SW_ON LOW
